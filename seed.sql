@@ -117,3 +117,33 @@ INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, precio_unitario_con
 (19, 2,  1, 4800000), (19, 3,  1,  350000),
 (20, 7,  2,  480000), (20, 8,  1,  650000);
  
+-- Actualizar totales de ventas
+UPDATE ventas v
+SET total = (
+    SELECT COALESCE(
+        SUM(dv.cantidad * dv.precio_unitario_congelado),
+        0
+      )
+    FROM detalle_ventas dv
+    WHERE dv.id_venta = v.id_venta
+  );
+-- Actualizar total_gastado de clientes
+UPDATE clientes c
+SET total_gastado = (
+    SELECT COALESCE(SUM(v.total), 0)
+    FROM ventas v
+    WHERE v.id_cliente = c.id_cliente
+      AND v.estado != 'Cancelado'
+  );
+-- Actualizar fecha_ultimo_pedido
+UPDATE clientes c
+SET fecha_ultimo_pedido = (
+    SELECT MAX(v.fecha_venta)
+    FROM ventas v
+    WHERE v.id_cliente = c.id_cliente
+  );
+-- Datos en carritos_abandonados
+INSERT INTO carritos_abandonados (id_cliente, id_producto, cantidad, fecha_agrego)
+VALUES (4, 2, 1, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+  (6, 9, 1, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+  (10, 1, 1, DATE_SUB(NOW(), INTERVAL 2 DAY));
