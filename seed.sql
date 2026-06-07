@@ -1,11 +1,11 @@
-USE DATABASE E-commerce
+USE E_commerce;
 
 -- ===============
 -- DATOS DE PRUEBA
 -- ===============
 
 -- Categorías
-INSERT INTO categorias (nombre, descripcion) VALUES
+INSERT INTO Categorias (nombre, descripcion) VALUES
 ('Electrónica',   'Dispositivos electrónicos, gadgets y accesorios tecnológicos'),
 ('Ropa',          'Prendas de vestir para hombre, mujer y niños'),
 ('Hogar',         'Artículos para el hogar, decoración y menaje'),
@@ -18,7 +18,7 @@ INSERT INTO categorias (nombre, descripcion) VALUES
 ('General',       'Categoría general para productos sin clasificar');
  
 -- Proveedores
-INSERT INTO proveedores (nombre, email, telefono) VALUES
+INSERT INTO Proveedores (nombre, email, telefono) VALUES
 ('TechWorld S.A.',          'ventas@techworld.com',      '+57 1 234 5678'),
 ('Moda Global Ltda.',       'pedidos@modaglobal.co',     '+57 4 321 8765'),
 ('Casa y Vida Corp.',       'info@casayvida.com',        '+57 2 111 2233'),
@@ -31,7 +31,7 @@ INSERT INTO proveedores (nombre, email, telefono) VALUES
 ('Distribuidora General',   'info@distgeneral.com',      '+57 8 222 3344');
  
 -- Productos
-INSERT INTO productos (nombre, descripcion, precio, costo, stock, sku, id_categoria, id_proveedor) VALUES
+INSERT INTO Productos (nombre, descripcion, precio, costo, stock, sku, id_categoria, id_proveedor) VALUES
 ('Smartphone Galaxy S23',   'Teléfono inteligente 256GB RAM 8GB',    2500000, 1800000,  50, 'ELEC-SGS23-001', 1, 1),
 ('Laptop ProBook 15',       'Laptop Intel i7 16GB RAM 512GB SSD',    4800000, 3500000,  25, 'ELEC-LPB15-002', 1, 1),
 ('Auriculares Bluetooth X1','Auriculares inalámbricos con ANC',        350000,  210000, 100, 'ELEC-ABX1-003',  1, 1),
@@ -54,7 +54,7 @@ INSERT INTO productos (nombre, descripcion, precio, costo, stock, sku, id_catego
 ('Aceite para Motor 5W-30', 'Aceite sintético para motor 4L',          120000,   72000, 200, 'AUTO-AM5-020',  9, 9);
  
 -- Clientes
-INSERT INTO clientes (nombre, apellido, email, contrasena, direccion_envio, fecha_nacimiento, ciudad, region) VALUES
+INSERT INTO Clientes (nombre, apellido, email, contrasena, direccion_envio, fecha_nacimiento, ciudad, region) VALUES
 ('Carlos',    'Rodríguez',  'carlos.rodriguez@email.com',  SHA2('Pass@1234', 256), 'Cra 15 #45-23 Bogotá',       '1988-03-12', 'Bogotá',    'Cundinamarca'),
 ('María',     'González',   'maria.gonzalez@email.com',    SHA2('Secure#99', 256), 'Cl 80 #12-34 Medellín',       '1992-07-25', 'Medellín',  'Antioquia'),
 ('Jorge',     'Martínez',   'jorge.martinez@email.com',    SHA2('JorgePwd!2', 256),'Av 4N #38-20 Cali',           '1985-11-30', 'Cali',      'Valle del Cauca'),
@@ -72,7 +72,7 @@ INSERT INTO clientes (nombre, apellido, email, contrasena, direccion_envio, fech
 ('Mateo',     'Díaz',       'mateo.diaz@email.com',        SHA2('MateD@44', 256),  'Cl 12 #34-56 Bucaramanga',    '1997-11-16', 'Bucaramanga','Santander');
  
 -- Ventas
-INSERT INTO ventas (id_cliente, estado, fecha_venta) VALUES
+INSERT INTO Ventas (id_cliente, estado, fecha_venta) VALUES
 (1, 'Entregado',        '2024-01-15 10:30:00'),
 (2, 'Entregado',        '2024-01-20 14:00:00'),
 (3, 'Enviado',          '2024-02-05 09:15:00'),
@@ -95,7 +95,7 @@ INSERT INTO ventas (id_cliente, estado, fecha_venta) VALUES
 (2, 'Entregado',        '2024-10-15 11:00:00');
  
 -- Detalle de ventas
-INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, precio_unitario_congelado) VALUES
+INSERT INTO Detalle_de_Ventas (id_venta, id_producto, cantidad, precio_unitario_congelado) VALUES
 (1,  1,  1, 2500000), (1,  3,  2,  350000),
 (2,  4,  3,   85000), (2,  5,  2,  160000),
 (3,  10, 1, 1800000), (3,  11, 2,   95000),
@@ -118,28 +118,28 @@ INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, precio_unitario_con
 (20, 7,  2,  480000), (20, 8,  1,  650000);
  
 -- Actualizar totales de ventas
-UPDATE ventas v
+UPDATE Ventas v
 SET total = (
     SELECT COALESCE(
         SUM(dv.cantidad * dv.precio_unitario_congelado),
         0
       )
-    FROM detalle_ventas dv
+    FROM Detalle_de_Ventas dv
     WHERE dv.id_venta = v.id_venta
   );
 -- Actualizar total_gastado de clientes
-UPDATE clientes c
+UPDATE Clientes c
 SET total_gastado = (
     SELECT COALESCE(SUM(v.total), 0)
-    FROM ventas v
+    FROM Ventas v
     WHERE v.id_cliente = c.id_cliente
       AND v.estado != 'Cancelado'
   );
 -- Actualizar fecha_ultimo_pedido
-UPDATE clientes c
+UPDATE Clientes c
 SET fecha_ultimo_pedido = (
     SELECT MAX(v.fecha_venta)
-    FROM ventas v
+    FROM Ventas v
     WHERE v.id_cliente = c.id_cliente
   );
 -- Datos en carritos_abandonados
