@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS Ventas (
   id_venta INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
   id_cliente INT NOT NULL,
   fecha_venta TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+  id_sucursal INT,
   estado ENUM('Pendiente de Pago', 'Procesando', 'Enviado', 'Entregado', 'Cancelado') NOT NULL DEFAULT 'Pendiente de Pago',
   total DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
 

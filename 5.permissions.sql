@@ -21,7 +21,7 @@ SELECT
     region,
     fecha_registro,
     fecha_ultimo_pedido
-FROM clientes;<
+FROM clientes;
  
 -- Vista para Visitantes: solo productos activos sin costos internos
 CREATE OR REPLACE VIEW v_productos_publicos AS
@@ -63,68 +63,68 @@ SELECT * FROM ventas WHERE id_sucursal = 2;
 -- 1. Administrador_Sistema: todos los privilegios sobre la BD
 DROP ROLE IF EXISTS 'Administrador_Sistema';
 CREATE ROLE 'Administrador_Sistema';
-GRANT ALL PRIVILEGES ON ecommerce_db.* TO 'Administrador_Sistema';
+GRANT ALL PRIVILEGES ON E_commerce.* TO 'Administrador_Sistema';
  
 -- 2. Gerente_Marketing: lectura en ventas, clientes, productos
 DROP ROLE IF EXISTS 'Gerente_Marketing';
 CREATE ROLE 'Gerente_Marketing';
-GRANT SELECT ON ecommerce_db.ventas         TO 'Gerente_Marketing';
-GRANT SELECT ON ecommerce_db.clientes       TO 'Gerente_Marketing';
-GRANT SELECT ON ecommerce_db.Detalle_de_Ventas TO 'Gerente_Marketing';
-GRANT SELECT ON ecommerce_db.productos      TO 'Gerente_Marketing';
-GRANT SELECT ON ecommerce_db.categorias     TO 'Gerente_Marketing';
-GRANT SELECT ON ecommerce_db.kpis_mensuales TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.ventas         TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.clientes       TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.Detalle_de_Ventas TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.productos      TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.categorias     TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.kpis_mensuales TO 'Gerente_Marketing';
  
 -- 3. Analista_Datos: lectura en tablas operativas, SIN tablas de auditoría
 DROP ROLE IF EXISTS 'Analista_Datos';
 CREATE ROLE 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.categorias        TO 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.proveedores       TO 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.productos         TO 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.clientes          TO 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.ventas            TO 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.Detalle_de_Ventas    TO 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.resenas_productos TO 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.ranking_productos TO 'Analista_Datos';
-GRANT SELECT ON ecommerce_db.kpis_mensuales    TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.categorias        TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.proveedores       TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.productos         TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.clientes          TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.ventas            TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.Detalle_de_Ventas    TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.resenas_productos TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.ranking_productos TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.kpis_mensuales    TO 'Analista_Datos';
  
 -- 4. Empleado_Inventario: solo puede ver y actualizar stock (NO precio)
 DROP ROLE IF EXISTS 'Empleado_Inventario';
 CREATE ROLE 'Empleado_Inventario';
-GRANT SELECT         ON ecommerce_db.productos    TO 'Empleado_Inventario';
-GRANT SELECT         ON ecommerce_db.categorias   TO 'Empleado_Inventario';
-GRANT SELECT         ON ecommerce_db.proveedores  TO 'Empleado_Inventario';
-GRANT SELECT         ON ecommerce_db.alertas_stock TO 'Empleado_Inventario';
-GRANT UPDATE (stock) ON ecommerce_db.productos    TO 'Empleado_Inventario';
+GRANT SELECT         ON E_commerce.productos    TO 'Empleado_Inventario';
+GRANT SELECT         ON E_commerce.categorias   TO 'Empleado_Inventario';
+GRANT SELECT         ON E_commerce.proveedores  TO 'Empleado_Inventario';
+GRANT SELECT         ON E_commerce.alertas_stock TO 'Empleado_Inventario';
+GRANT UPDATE (stock) ON E_commerce.productos    TO 'Empleado_Inventario';
  
 -- 5. Atencion_Cliente: ve clientes (sin datos sensibles) y ventas
 DROP ROLE IF EXISTS 'Atencion_Cliente';
 CREATE ROLE 'Atencion_Cliente';
-GRANT SELECT          ON ecommerce_db.v_info_clientes_basica TO 'Atencion_Cliente';
-GRANT SELECT          ON ecommerce_db.ventas                 TO 'Atencion_Cliente';
-GRANT SELECT          ON ecommerce_db.Detalle_de_Ventas         TO 'Atencion_Cliente';
-GRANT SELECT          ON ecommerce_db.productos              TO 'Atencion_Cliente';
-GRANT SELECT          ON ecommerce_db.resenas_productos      TO 'Atencion_Cliente';
-GRANT UPDATE (estado) ON ecommerce_db.ventas                 TO 'Atencion_Cliente';
+GRANT SELECT          ON E_commerce.v_info_clientes_basica TO 'Atencion_Cliente';
+GRANT SELECT          ON E_commerce.ventas                 TO 'Atencion_Cliente';
+GRANT SELECT          ON E_commerce.Detalle_de_Ventas         TO 'Atencion_Cliente';
+GRANT SELECT          ON E_commerce.productos              TO 'Atencion_Cliente';
+GRANT SELECT          ON E_commerce.resenas_productos      TO 'Atencion_Cliente';
+GRANT UPDATE (estado) ON E_commerce.ventas                 TO 'Atencion_Cliente';
  
 -- 6. Auditor_Financiero: lectura en ventas, productos y todos los logs
 DROP ROLE IF EXISTS 'Auditor_Financiero';
 CREATE ROLE 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.ventas                 TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.Detalle_de_Ventas         TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.productos              TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.clientes               TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.log_cambios_precio     TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.log_estado_pedidos     TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.log_auditoria_clientes TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.v_ventas_auditoria     TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_db.kpis_mensuales         TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.ventas                 TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.Detalle_de_Ventas         TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.productos              TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.clientes               TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.log_cambios_precio     TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.log_estado_pedidos     TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.log_auditoria_clientes TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.v_ventas_auditoria     TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.kpis_mensuales         TO 'Auditor_Financiero';
  
 -- 7. Visitante: solo puede ver el catálogo público
 DROP ROLE IF EXISTS 'Visitante';
 CREATE ROLE 'Visitante';
-GRANT SELECT ON ecommerce_db.v_productos_publicos TO 'Visitante';
-GRANT SELECT ON ecommerce_db.categorias           TO 'Visitante';
+GRANT SELECT ON E_commerce.v_productos_publicos TO 'Visitante';
+GRANT SELECT ON E_commerce.categorias           TO 'Visitante';
  
 -- ============================================================
 -- USUARIOS
@@ -188,28 +188,19 @@ GRANT 'Analista_Datos' TO 'analista_user'@'localhost';
 SET DEFAULT ROLE 'Analista_Datos' TO 'analista_user'@'localhost';
  
 -- ============================================================
--- 11. Analista_Datos NO puede ejecutar DELETE ni TRUNCATE
---     Se revoca explícitamente cualquier privilegio de escritura
---     sobre todas las tablas de la BD para el usuario analista.
--- ============================================================
-REVOKE INSERT, UPDATE, DELETE, DROP, CREATE, ALTER, INDEX, TRIGGER
-    ON ecommerce_db.*
-    FROM 'analista_user'@'localhost';
- 
--- ============================================================
 -- 12. Gerente_Marketing puede ejecutar procedimientos de reportes
 -- ============================================================
-GRANT EXECUTE ON PROCEDURE ecommerce_db.sp_GenerarReporteMensualVentas
+GRANT EXECUTE ON PROCEDURE E_commerce.sp_GenerarReporteMensualVentas
     TO 'Gerente_Marketing';
-GRANT EXECUTE ON PROCEDURE ecommerce_db.sp_GenerarReporteMensualVentas
+GRANT EXECUTE ON PROCEDURE E_commerce.sp_GenerarReporteMensualVentas
     TO 'marketing_user'@'localhost';
-GRANT EXECUTE ON PROCEDURE ecommerce_db.sp_ObtenerDashboardAdmin
+GRANT EXECUTE ON PROCEDURE E_commerce.sp_ObtenerDashboardAdmin
     TO 'marketing_user'@'localhost';
  
 -- Permisos de EXECUTE para support_user
-GRANT EXECUTE ON PROCEDURE ecommerce_db.sp_ObtenerHistorialComprasCliente
+GRANT EXECUTE ON PROCEDURE E_commerce.sp_ObtenerHistorialComprasCliente
     TO 'support_user'@'localhost';
-GRANT EXECUTE ON PROCEDURE ecommerce_db.sp_CambiarEstadoPedido
+GRANT EXECUTE ON PROCEDURE E_commerce.sp_CambiarEstadoPedido
     TO 'support_user'@'localhost';
  
 -- ============================================================
@@ -217,21 +208,21 @@ GRANT EXECUTE ON PROCEDURE ecommerce_db.sp_CambiarEstadoPedido
 --     La vista ya excluye: contrasena, total_gastado, fecha_nacimiento.
 --     Se crea además un procedimiento de solo lectura para el rol.
 -- ============================================================
-GRANT SELECT ON ecommerce_db.v_info_clientes_basica TO 'Atencion_Cliente';
-GRANT SELECT ON ecommerce_db.v_info_clientes_basica TO 'support_user'@'localhost';
+GRANT SELECT ON E_commerce.v_info_clientes_basica TO 'Atencion_Cliente';
+GRANT SELECT ON E_commerce.v_info_clientes_basica TO 'support_user'@'localhost';
  
 -- Revocar acceso directo a la tabla clientes para support_user
 -- (debe usar solo la vista, no la tabla base)
-REVOKE SELECT ON ecommerce_db.clientes FROM 'support_user'@'localhost';
+REVOKE SELECT ON E_commerce.clientes FROM 'support_user'@'localhost';
  
 -- ============================================================
 -- 14. Revocar UPDATE sobre la columna precio al rol Empleado_Inventario
 --     El rol solo tiene GRANT UPDATE(stock), precio nunca fue otorgado.
 --     Se hace REVOKE explícito sobre el usuario para doble seguridad.
 -- ============================================================
-REVOKE UPDATE ON ecommerce_db.productos FROM 'inventory_user'@'localhost';
+REVOKE UPDATE ON E_commerce.productos FROM 'inventory_user'@'localhost';
 -- Solo se re-otorga UPDATE en la columna stock
-GRANT UPDATE (stock) ON ecommerce_db.productos TO 'inventory_user'@'localhost';
+GRANT UPDATE (stock) ON E_commerce.productos TO 'inventory_user'@'localhost';
  
 -- ============================================================
 -- 15. Política de contraseñas seguras para todos los usuarios
@@ -277,9 +268,9 @@ GRANT 'Visitante' TO 'visitante_user'@'%';
 SET DEFAULT ROLE 'Visitante' TO 'visitante_user'@'%';
  
 -- Confirmar que Visitante NO tiene acceso a clientes, ventas ni logs
-REVOKE ALL PRIVILEGES ON ecommerce_db.* FROM 'visitante_user'@'%';
-GRANT SELECT ON ecommerce_db.v_productos_publicos TO 'visitante_user'@'%';
-GRANT SELECT ON ecommerce_db.categorias           TO 'visitante_user'@'%';
+REVOKE ALL PRIVILEGES ON E_commerce.* FROM 'visitante_user'@'%';
+GRANT SELECT ON E_commerce.v_productos_publicos TO 'visitante_user'@'%';
+GRANT SELECT ON E_commerce.categorias           TO 'visitante_user'@'%';
  
 -- ============================================================
 -- 18. Limitar número de consultas por hora para Analista_Datos
@@ -302,16 +293,16 @@ CREATE USER 'sucursal1_user'@'localhost'
     IDENTIFIED BY 'Sucursal1@2024!'
     PASSWORD EXPIRE INTERVAL 90 DAY
     FAILED_LOGIN_ATTEMPTS 5 PASSWORD_LOCK_TIME 1;
-GRANT SELECT ON ecommerce_db.v_ventas_sucursal_1 TO 'sucursal1_user'@'localhost';
-GRANT SELECT ON ecommerce_db.v_productos_publicos TO 'sucursal1_user'@'localhost';
+GRANT SELECT ON E_commerce.v_ventas_sucursal_1 TO 'sucursal1_user'@'localhost';
+GRANT SELECT ON E_commerce.v_productos_publicos TO 'sucursal1_user'@'localhost';
  
 DROP USER IF EXISTS 'sucursal2_user'@'localhost';
 CREATE USER 'sucursal2_user'@'localhost'
     IDENTIFIED BY 'Sucursal2@2024!'
     PASSWORD EXPIRE INTERVAL 90 DAY
     FAILED_LOGIN_ATTEMPTS 5 PASSWORD_LOCK_TIME 1;
-GRANT SELECT ON ecommerce_db.v_ventas_sucursal_2 TO 'sucursal2_user'@'localhost';
-GRANT SELECT ON ecommerce_db.v_productos_publicos TO 'sucursal2_user'@'localhost';
+GRANT SELECT ON E_commerce.v_ventas_sucursal_2 TO 'sucursal2_user'@'localhost';
+GRANT SELECT ON E_commerce.v_productos_publicos TO 'sucursal2_user'@'localhost';
  
 -- ============================================================
 -- 20. Auditoría de intentos de inicio de sesión fallidos
@@ -336,7 +327,7 @@ CREATE EVENT evt_detect_failed_logins
 ON SCHEDULE EVERY 15 MINUTE
 STARTS NOW()
 DO
-    INSERT INTO ecommerce_db.log_intentos_fallidos
+    INSERT INTO E_commerce.log_intentos_fallidos
         (usuario, host, intentos, bloqueado)
     SELECT
         User,
