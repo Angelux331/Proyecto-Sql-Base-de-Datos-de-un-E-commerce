@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS Productos (
   sku VARCHAR(100) UNIQUE KEY NOT NULL,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
   activo BOOLEAN DEFAULT TRUE,
+  fecha_modificacion DATETIME DEFAULT CURRENT_TIMESTAMP(),
   id_categoria INT,
   id_proveedor INT,
 
