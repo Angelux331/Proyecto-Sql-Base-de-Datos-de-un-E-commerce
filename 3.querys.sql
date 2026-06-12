@@ -106,13 +106,13 @@ FROM (
 -- 7. Productos Comprados Juntos Frecuentemente
 -- ============================================
 SELECT
-    p1.nombre AS producto_1,
-    p2.nombre AS producto_2,
+    p1.nombre AS Producto_1,
+    p2.nombre AS Producto_2,
     COUNT(*)  AS veces_juntos
 FROM Detalle_de_Ventas dv1
 JOIN Detalle_de_Ventas dv2 ON dv1.id_venta = dv2.id_venta AND dv1.id_producto < dv2.id_producto
-JOIN productos p1 ON dv1.id_producto = p1.id_producto
-JOIN productos p2 ON dv2.id_producto = p2.id_producto
+JOIN Productos p1 ON dv1.id_producto = p1.id_producto
+JOIN Productos p2 ON dv2.id_producto = p2.id_producto
 GROUP BY p1.nombre, p2.nombre
 ORDER BY veces_juntos DESC
 LIMIT 20;
@@ -127,10 +127,10 @@ SELECT
     ROUND(
         SUM(dv.cantidad) / NULLIF(SUM(p.stock), 0), 2
     ) AS tasa_rotacion
-FROM categorias c
-JOIN productos p        ON c.id_categoria = p.id_categoria
+FROM Categorias c
+JOIN Productos p        ON c.id_categoria = p.id_categoria
 LEFT JOIN Detalle_de_Ventas dv ON p.id_producto = dv.id_producto
-LEFT JOIN ventas v          ON dv.id_venta  = v.id_venta AND v.estado != 'Cancelado'
+LEFT JOIN Ventas v          ON dv.id_venta  = v.id_venta AND v.estado != 'Cancelado'
 GROUP BY c.id_categoria, c.nombre
 ORDER BY tasa_rotacion DESC;
  
@@ -143,8 +143,8 @@ SELECT
     p.sku,
     p.stock,
     pr.nombre AS proveedor
-FROM productos p
-LEFT JOIN proveedores pr ON p.id_proveedor = pr.id_proveedor
+FROM Productos p
+LEFT JOIN Proveedores pr ON p.id_proveedor = pr.id_proveedor
 WHERE p.stock < 30 AND p.activo = 1
 ORDER BY p.stock ASC;
  
@@ -158,10 +158,10 @@ SELECT
     COUNT(ca.id_carrito)              AS productos_abandonados,
     MIN(ca.fecha_agrego)              AS desde_cuando
 FROM carritos_abandonados ca
-JOIN clientes c ON ca.id_cliente = c.id_cliente
+JOIN Clientes c ON ca.id_cliente = c.id_cliente
 WHERE ca.fecha_agrego < DATE_SUB(NOW(), INTERVAL 72 HOUR)
   AND NOT EXISTS (
-      SELECT 1 FROM ventas v
+      SELECT 1 FROM Ventas v
       WHERE v.id_cliente = ca.id_cliente
         AND v.fecha_venta > DATE_SUB(NOW(), INTERVAL 72 HOUR)
         AND v.estado NOT IN ('Cancelado')
@@ -178,10 +178,10 @@ SELECT
     COUNT(DISTINCT p.id_producto)                          AS num_productos,
     SUM(dv.cantidad)                                       AS unidades_vendidas,
     SUM(dv.cantidad * dv.precio_unitario_congelado)        AS ingresos_generados
-FROM proveedores pr
-JOIN productos p       ON pr.id_proveedor = p.id_proveedor
+FROM Proveedores pr
+JOIN Productos p       ON pr.id_proveedor = p.id_proveedor
 LEFT JOIN Detalle_de_Ventas dv ON p.id_producto = dv.id_producto
-LEFT JOIN ventas v          ON dv.id_venta  = v.id_venta AND v.estado != 'Cancelado'
+LEFT JOIN Ventas v          ON dv.id_venta  = v.id_venta AND v.estado != 'Cancelado'
 GROUP BY pr.id_proveedor, pr.nombre
 ORDER BY ingresos_generados DESC;
  
@@ -193,8 +193,8 @@ SELECT
     c.region,
     COUNT(DISTINCT v.id_venta) AS num_ordenes,
     SUM(v.total)               AS total_ventas
-FROM ventas v
-JOIN clientes c ON v.id_cliente = c.id_cliente
+FROM Ventas v
+JOIN Clientes c ON v.id_cliente = c.id_cliente
 WHERE v.estado != 'Cancelado'
 GROUP BY c.ciudad, c.region
 ORDER BY total_ventas DESC;
@@ -206,7 +206,7 @@ SELECT
     HOUR(fecha_venta) AS hora_dia,
     COUNT(id_venta)   AS num_ordenes,
     SUM(total)        AS ingresos
-FROM ventas
+FROM Ventas
 WHERE estado != 'Cancelado'
 GROUP BY hora_dia
 ORDER BY num_ordenes DESC;
@@ -220,8 +220,8 @@ SELECT
     SUM(CASE WHEN v.fecha_venta BETWEEN '2024-03-01' AND '2024-04-30'        THEN dv.cantidad * dv.precio_unitario_congelado ELSE 0 END) AS ventas_durante,
     SUM(CASE WHEN v.fecha_venta > '2024-04-30'                               THEN dv.cantidad * dv.precio_unitario_congelado ELSE 0 END) AS ventas_despues
 FROM Detalle_de_Ventas dv
-JOIN productos p ON dv.id_producto = p.id_producto
-JOIN ventas    v ON dv.id_venta    = v.id_venta
+JOIN Productos p ON dv.id_producto = p.id_producto
+JOIN Ventas    v ON dv.id_venta    = v.id_venta
 WHERE v.estado != 'Cancelado'
 GROUP BY p.nombre
 ORDER BY ventas_durante DESC;
@@ -231,7 +231,7 @@ ORDER BY ventas_durante DESC;
 -- ================================================================================
 WITH primera_compra AS (
     SELECT id_cliente, DATE_FORMAT(MIN(fecha_venta), '%Y-%m') AS cohort
-    FROM ventas
+    FROM Ventas
     WHERE estado != 'Cancelado'
     GROUP BY id_cliente
 ),
@@ -239,7 +239,7 @@ actividad AS (
     SELECT
         v.id_cliente,
         DATE_FORMAT(v.fecha_venta, '%Y-%m') AS mes_actividad
-    FROM ventas v
+    FROM Ventas v
     WHERE v.estado != 'Cancelado'
     GROUP BY v.id_cliente, mes_actividad
 )
@@ -263,7 +263,7 @@ SELECT
     p.costo,
     ROUND(p.precio - p.costo, 2)                  AS margen_bruto,
     ROUND((p.precio - p.costo) / p.precio * 100, 2) AS margen_pct
-FROM productos p
+FROM Productos p
 WHERE p.activo = 1
 ORDER BY margen_pct DESC;
  
@@ -275,7 +275,7 @@ WITH ventas_ordenadas AS (
         id_cliente,
         fecha_venta,
         LAG(fecha_venta) OVER (PARTITION BY id_cliente ORDER BY fecha_venta) AS compra_anterior
-    FROM ventas
+    FROM Ventas
     WHERE estado != 'Cancelado'
 )
 SELECT
@@ -294,9 +294,9 @@ SELECT
     p.nombre,
     COALESCE(SUM(dv.cantidad), 0) AS unidades_compradas,
     RANK() OVER (ORDER BY COALESCE(SUM(dv.cantidad), 0) DESC) AS ranking_compras
-FROM productos p
+FROM Productos p
 LEFT JOIN Detalle_de_Ventas dv ON p.id_producto = dv.id_producto
-LEFT JOIN ventas v          ON dv.id_venta  = v.id_venta AND v.estado != 'Cancelado'
+LEFT JOIN Ventas v          ON dv.id_venta  = v.id_venta AND v.estado != 'Cancelado'
 GROUP BY p.id_producto, p.nombre
 ORDER BY unidades_compradas DESC;
  
@@ -310,8 +310,8 @@ WITH rfm_raw AS (
         DATEDIFF(CURDATE(), MAX(v.fecha_venta))  AS recencia,
         COUNT(v.id_venta)                         AS frecuencia,
         SUM(v.total)                              AS monetario
-    FROM clientes c
-    JOIN ventas v ON c.id_cliente = v.id_cliente
+    FROM Clientes c
+    JOIN Ventas v ON c.id_cliente = v.id_cliente
     WHERE v.estado != 'Cancelado'
     GROUP BY c.id_cliente, c.nombre, c.apellido
 ),
@@ -346,9 +346,9 @@ WITH ventas_mensuales_cat AS (
         MONTH(v.fecha_venta) AS mes,
         SUM(dv.cantidad)     AS unidades_vendidas
     FROM Detalle_de_Ventas dv
-    JOIN ventas v    ON dv.id_venta    = v.id_venta
-    JOIN productos p ON dv.id_producto = p.id_producto
-    JOIN categorias c ON p.id_categoria = c.id_categoria
+    JOIN Ventas v    ON dv.id_venta    = v.id_venta
+    JOIN Productos p ON dv.id_producto = p.id_producto
+    JOIN Categorias c ON p.id_categoria = c.id_categoria
     WHERE v.estado != 'Cancelado'
     GROUP BY c.id_categoria, c.nombre, anio, mes
 )
