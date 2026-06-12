@@ -169,8 +169,8 @@ CREATE TABLE IF NOT EXISTS resenas_productos (
 
   CONSTRAINT chk_clasificacion CHECK (clasificacion BETWEEN 1 AND 5),
 
-  FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
-  FOREIGN KEY (id_cliente)  REFERENCES clientes(id_cliente)
+  FOREIGN KEY (id_producto) REFERENCES Productos(id_producto),
+  FOREIGN KEY (id_cliente)  REFERENCES Clientes(id_cliente)
 );
 
 -- Tabla de carritos abandonados
@@ -181,8 +181,8 @@ CREATE TABLE IF NOT EXISTS carritos_abandonados (
   cantidad INT NOT NULL DEFAULT 1,
   fecha_agrego DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (id_cliente)  REFERENCES clientes(id_cliente),
-  FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+  FOREIGN KEY (id_cliente)  REFERENCES Clientes(id_cliente),
+  FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
 );
 
 -- Tabla de ranking de productos (que se actualiza por los eventos)

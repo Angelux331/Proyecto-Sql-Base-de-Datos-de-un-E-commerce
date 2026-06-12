@@ -21,7 +21,7 @@ SELECT
     region,
     fecha_registro,
     fecha_ultimo_pedido
-FROM clientes;
+FROM Clientes;
  
 -- Vista para Visitantes: solo productos activos sin costos internos
 CREATE OR REPLACE VIEW v_productos_publicos AS
@@ -34,7 +34,7 @@ SELECT
     sku,
     activo,
     id_categoria
-FROM productos
+FROM Productos
 WHERE activo = 1;
  
 -- Vista para Auditores: ventas sin datos personales identificables
@@ -46,8 +46,8 @@ SELECT
     v.total,
     c.ciudad,
     c.region
-FROM ventas v
-JOIN clientes c ON v.id_cliente = c.id_cliente;
+FROM Ventas v
+JOIN Clientes c ON v.id_cliente = c.id_cliente;
  
 -- Vista por sucursal (req. 19)
 CREATE OR REPLACE VIEW v_ventas_sucursal_1 AS
@@ -68,21 +68,21 @@ GRANT ALL PRIVILEGES ON E_commerce.* TO 'Administrador_Sistema';
 -- 2. Gerente_Marketing: lectura en ventas, clientes, productos
 DROP ROLE IF EXISTS 'Gerente_Marketing';
 CREATE ROLE 'Gerente_Marketing';
-GRANT SELECT ON E_commerce.ventas         TO 'Gerente_Marketing';
-GRANT SELECT ON E_commerce.clientes       TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.Ventas         TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.Clientes       TO 'Gerente_Marketing';
 GRANT SELECT ON E_commerce.Detalle_de_Ventas TO 'Gerente_Marketing';
-GRANT SELECT ON E_commerce.productos      TO 'Gerente_Marketing';
-GRANT SELECT ON E_commerce.categorias     TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.Productos      TO 'Gerente_Marketing';
+GRANT SELECT ON E_commerce.Categorias     TO 'Gerente_Marketing';
 GRANT SELECT ON E_commerce.kpis_mensuales TO 'Gerente_Marketing';
  
 -- 3. Analista_Datos: lectura en tablas operativas, SIN tablas de auditoría
 DROP ROLE IF EXISTS 'Analista_Datos';
 CREATE ROLE 'Analista_Datos';
-GRANT SELECT ON E_commerce.categorias        TO 'Analista_Datos';
-GRANT SELECT ON E_commerce.proveedores       TO 'Analista_Datos';
-GRANT SELECT ON E_commerce.productos         TO 'Analista_Datos';
-GRANT SELECT ON E_commerce.clientes          TO 'Analista_Datos';
-GRANT SELECT ON E_commerce.ventas            TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.Categorias        TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.Proveedores       TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.Productos         TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.Clientes          TO 'Analista_Datos';
+GRANT SELECT ON E_commerce.Ventas            TO 'Analista_Datos';
 GRANT SELECT ON E_commerce.Detalle_de_Ventas    TO 'Analista_Datos';
 GRANT SELECT ON E_commerce.resenas_productos TO 'Analista_Datos';
 GRANT SELECT ON E_commerce.ranking_productos TO 'Analista_Datos';
@@ -91,29 +91,29 @@ GRANT SELECT ON E_commerce.kpis_mensuales    TO 'Analista_Datos';
 -- 4. Empleado_Inventario: solo puede ver y actualizar stock (NO precio)
 DROP ROLE IF EXISTS 'Empleado_Inventario';
 CREATE ROLE 'Empleado_Inventario';
-GRANT SELECT         ON E_commerce.productos    TO 'Empleado_Inventario';
-GRANT SELECT         ON E_commerce.categorias   TO 'Empleado_Inventario';
-GRANT SELECT         ON E_commerce.proveedores  TO 'Empleado_Inventario';
+GRANT SELECT         ON E_commerce.Productos    TO 'Empleado_Inventario';
+GRANT SELECT         ON E_commerce.Categorias   TO 'Empleado_Inventario';
+GRANT SELECT         ON E_commerce.Proveedores  TO 'Empleado_Inventario';
 GRANT SELECT         ON E_commerce.alertas_stock TO 'Empleado_Inventario';
-GRANT UPDATE (stock) ON E_commerce.productos    TO 'Empleado_Inventario';
+GRANT UPDATE (stock) ON E_commerce.Productos    TO 'Empleado_Inventario';
  
 -- 5. Atencion_Cliente: ve clientes (sin datos sensibles) y ventas
 DROP ROLE IF EXISTS 'Atencion_Cliente';
 CREATE ROLE 'Atencion_Cliente';
 GRANT SELECT          ON E_commerce.v_info_clientes_basica TO 'Atencion_Cliente';
-GRANT SELECT          ON E_commerce.ventas                 TO 'Atencion_Cliente';
+GRANT SELECT          ON E_commerce.Ventas                 TO 'Atencion_Cliente';
 GRANT SELECT          ON E_commerce.Detalle_de_Ventas         TO 'Atencion_Cliente';
-GRANT SELECT          ON E_commerce.productos              TO 'Atencion_Cliente';
+GRANT SELECT          ON E_commerce.Productos              TO 'Atencion_Cliente';
 GRANT SELECT          ON E_commerce.resenas_productos      TO 'Atencion_Cliente';
-GRANT UPDATE (estado) ON E_commerce.ventas                 TO 'Atencion_Cliente';
+GRANT UPDATE (estado) ON E_commerce.Ventas                 TO 'Atencion_Cliente';
  
 -- 6. Auditor_Financiero: lectura en ventas, productos y todos los logs
 DROP ROLE IF EXISTS 'Auditor_Financiero';
 CREATE ROLE 'Auditor_Financiero';
-GRANT SELECT ON E_commerce.ventas                 TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.Ventas                 TO 'Auditor_Financiero';
 GRANT SELECT ON E_commerce.Detalle_de_Ventas         TO 'Auditor_Financiero';
-GRANT SELECT ON E_commerce.productos              TO 'Auditor_Financiero';
-GRANT SELECT ON E_commerce.clientes               TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.Productos              TO 'Auditor_Financiero';
+GRANT SELECT ON E_commerce.Clientes               TO 'Auditor_Financiero';
 GRANT SELECT ON E_commerce.log_cambios_precio     TO 'Auditor_Financiero';
 GRANT SELECT ON E_commerce.log_estado_pedidos     TO 'Auditor_Financiero';
 GRANT SELECT ON E_commerce.log_auditoria_clientes TO 'Auditor_Financiero';
@@ -124,7 +124,7 @@ GRANT SELECT ON E_commerce.kpis_mensuales         TO 'Auditor_Financiero';
 DROP ROLE IF EXISTS 'Visitante';
 CREATE ROLE 'Visitante';
 GRANT SELECT ON E_commerce.v_productos_publicos TO 'Visitante';
-GRANT SELECT ON E_commerce.categorias           TO 'Visitante';
+GRANT SELECT ON E_commerce.Categorias           TO 'Visitante';
  
 -- ============================================================
 -- USUARIOS
